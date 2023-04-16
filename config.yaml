@@ -1,0 +1,13 @@
+credentials:
+  usernames:
+    chamsedine:
+      email: aidarachamsedine10@gmail.com
+      name: Chamsedine Aidare
+      password: $2b$12$kYxCperhpedJkfFkCjaIW.gcm.RnlNZIQEtnmXTeNTEYlIpfRtDI. # To be replaced with hashed password
+cookie:
+  expiry_days: 30
+  key: some_signature_key # Must be string
+  name: some_cookie_name
+preauthorized:
+  emails:
+  - melsby@gmail.com

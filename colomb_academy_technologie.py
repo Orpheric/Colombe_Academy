@@ -4,6 +4,11 @@
 
 # importer les librairies.
 import streamlit as st
+import streamlit_authenticator as stauth
+       
+import yaml
+from yaml.loader import SafeLoader
+
 
 # occuper tous l'ecran.
 st.set_page_config(layout="wide")
@@ -11,8 +16,33 @@ st.set_page_config(layout="wide")
 # l'image à afficher.
 st.image("cat.jfif", width=200)
 
+    
 # afficher le titre.
 st.title("Licence Data Science & IA dashboard")
+
+
+with open('./config.yaml') as file:
+    config = yaml.load(file, Loader=SafeLoader)
+
+authenticator = stauth.Authenticate(
+    config['credentials'],
+    config['cookie']['name'],
+    config['cookie']['key'],
+    config['cookie']['expiry_days'],
+    config['preauthorized']
+)
+with st.expander("Se connecter"):
+    name, authentication_status, username = authenticator.login('Login', 'main')
+    if st.session_state["authentication_status"] == False:
+      st.error('Username/password is incorrect')
+    elif st.session_state["authentication_status"] == None:
+     st.warning('Please enter your username and password')
+    
+if st.session_state["authentication_status"]:
+    authenticator.logout('Logout', 'main')
+    st.write(f'Welcome *{st.session_state["name"]}*')
+
+
     
 # trois colonnes pour la progression et les modules
 progression, niveau, module, professeur = st.columns(4)
@@ -20,6 +50,11 @@ progression, niveau, module, professeur = st.columns(4)
 #                                    Licence 3                                                 #
 #---------------------------------------------------------------------------------------------#
 # le niveau de la filiere.
+
+if st.session_state["authentication_status"]:
+    progress = False
+else:
+    progress = True
 with niveau:
     select_niveau = st.selectbox(
         "Merci de selectionner le niveau d'étude",
@@ -36,7 +71,7 @@ with niveau:
                         min_value = 0.0,
                         max_value = 100.0,
                         value = 90.0,
-                        disabled = True,
+                        disabled = progress,
                         format = "%d%%")
                 with st.expander("Compte rendu du module selectionné"):
                   st.markdown('''
@@ -56,7 +91,7 @@ with niveau:
                 with professeur:
                     nom_professeur = st.selectbox(
                         "Le professeur chargé du cours",
-                        ("Chamsedine AIDARA",""),disabled = True,)
+                        ("Chamsedine AIDARA",""),disabled = progress,)
                         
             if  select_module == "Statistique Descriptive":
                 with progression:
@@ -65,7 +100,7 @@ with niveau:
                         min_value = 0.0,
                         max_value = 100.0,
                         value = 60.0,
-                        disabled = True,
+                        disabled = progress,
                         format = "%d%%")
                 with st.expander("Compte rendu du module selectionné"):
                   st.markdown('''
@@ -77,7 +112,7 @@ with niveau:
                 with professeur:
                     nom_professeur = st.selectbox(
                         "Le professeur chargé du cours",
-                        ("Wahab DIOP", " "),disabled = True,)
+                        ("Wahab DIOP", " "),disabled = progress,)
                     
             if  select_module == "Algorithme":
                 with progression:
@@ -86,7 +121,7 @@ with niveau:
                         min_value = 0.0,
                         max_value = 100.0,
                         value = 50.0,
-                        disabled = True,
+                        disabled = progress,
                         format = "%d%%")
                 with st.expander("Compte rendu du module selectionné"):
                   st.markdown('''
@@ -100,7 +135,7 @@ with niveau:
                 with professeur:
                     nom_professeur = st.selectbox(
                         "Le professeur chargé du cours",
-                        ("Serge Alexandre Boissy", " "),disabled = True,)
+                        ("Serge Alexandre Boissy", " "),disabled = progress,)
   
     
 #---------------------------------------------------------------------------------------------#
@@ -117,6 +152,7 @@ st.sidebar.markdown('''
 
 st.sidebar.image("image-ia.jfif")
 
+ 
 
                     
 # A propos de moi.
@@ -127,3 +163,4 @@ if st.checkbox("By"):
         st.caption("Supervisor Data Scientist Expresso Télécom")
         st.caption("c.aidara@cat.sn")
         st.caption("aidarachamsedine10@gmail.com")
+        
